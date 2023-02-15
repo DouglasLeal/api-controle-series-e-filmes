@@ -24,9 +24,9 @@ namespace App.Repositories
             return await _context.Filmes.ToListAsync();
         }
 
-        public async Task<Filme> BuscarPorId(int id)
+        public async Task<Filme?> BuscarPorId(int id)
         {
-            return await _context.Filmes.FindAsync(id);
+            return await _context.Filmes.FirstOrDefaultAsync(f => f.Id == id);
         }
 
         public async Task Atualizar(Filme filme)

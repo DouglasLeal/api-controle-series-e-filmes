@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using App.Interfaces;
+using App.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Controllers
@@ -7,28 +8,68 @@ namespace App.Controllers
     [ApiController]
     public class FilmeController : ControllerBase
     {
+        private readonly IFilmeRepository _repository;
+
+        public FilmeController(IFilmeRepository repository)
+        {
+            _repository = repository;
+        }
+
         [HttpGet]
         public async Task<IActionResult> Listar()
         {
-            return Ok();
+            var filmes = await _repository.Listar();
+            return Ok(filmes);
+        }
+
+        [HttpGet("/{id:int}")]
+        public async Task<IActionResult> BuscarPorId(int id)
+        {
+            var filme = await _repository.BuscarPorId(id);
+
+            if (filme == null) return NotFound();
+
+            return Ok(filme);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Criar()
+        public async Task<IActionResult> Criar([FromBody] Filme filme)
         {
-            return Ok();
+            await _repository.Criar(filme);
+
+            return CreatedAtAction(nameof(BuscarPorId), new { id = filme.Id }, filme);
         }
 
-        [HttpPut("/{id:int}")]
-        public async Task<IActionResult> Atualizar(int id)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Atualizar(int id, [FromBody] Filme filme)
         {
-            return Ok();
+            var filmeCadastrado = await _repository.BuscarPorId(id);
+
+            if (filmeCadastrado == null) return NotFound();
+
+            filmeCadastrado.Nota = filme.Nota;
+            filmeCadastrado.Assistido = filme.Assistido;
+            filmeCadastrado.TituloOriginal = filme.TituloOriginal;
+            filmeCadastrado.TituloBrasileiro = filme.TituloBrasileiro;
+            filmeCadastrado.Genero = filme.Genero;
+            filmeCadastrado.Lancamento = filme.Lancamento;
+            filmeCadastrado.Descricao = filme.Descricao;
+
+            await _repository.Atualizar(filmeCadastrado);
+
+            return NoContent();
         }
 
-        [HttpDelete("/{id:int}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Excluir(int id)
         {
-            return Ok();
+            var filme = await _repository.BuscarPorId(id);
+
+            if (filme == null) return NotFound();
+
+            await _repository.Excluir(filme);
+
+            return NoContent();
         }
     }
 }

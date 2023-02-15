@@ -12,6 +12,19 @@ namespace App.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Filme>(f => 
+            {
+                f.ToTable("Filmes");
+                f.HasKey(f => f.Id);
+                f.Property(f => f.TituloOriginal).HasColumnType("NVARCHAR(150)");
+                f.Property(f => f.TituloBrasileiro).HasColumnType("NVARCHAR(150)");
+                f.Property(f => f.Descricao).HasColumnType("TEXT");
+                f.Property(f => f.Nota).HasColumnType("INTEGER");
+                f.Property(f => f.Lancamento).HasColumnType("DATETIME");
+                f.Property(f => f.Genero).HasConversion<string>();
+                f.Property(f => f.Assistido).HasDefaultValue(false); ;
+            });
         }
 
     }

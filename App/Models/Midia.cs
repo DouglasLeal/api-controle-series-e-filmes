@@ -7,7 +7,7 @@
         public string? TituloBrasileiro { get; set; }
         public string? Descricao { get; set; }
         public int Nota { get; set; }
-        public DateOnly? Lancamento { get; set; }
+        public DateTime? Lancamento { get; set; }
         public Genero? Genero { get; set; }
     }
 
